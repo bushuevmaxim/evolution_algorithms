@@ -1,9 +1,9 @@
 import numpy as np
 
-from src.optimization.algorithms.algorithm import Algorithm
-from src.optimization.algorithms.pso.particle import Particle
-from src.optimization.algorithms.pso.velocity import Velocity
-from src.optimization.graph.graph import Graph
+from algorithms.algorithm import Algorithm
+from algorithms.pso.particle import Particle
+from algorithms.pso.velocity import Velocity
+from graph.graph import Graph
 
 
 class ParticlesSwarm(Algorithm):
@@ -57,19 +57,20 @@ class ParticlesSwarm(Algorithm):
             if velocity[source_index] == 1:
                 source = particle_current_solution[source_index]
                 destination = best_solution[source_index]
-                destination_index = np.where(particle_current_solution == destination)[0][0]
+                destination_index = np.where(
+                    particle_current_solution == destination)[0][0]
 
                 if source_index - 1 > 0 and not self.graph.edge_exists(particle_current_solution[source_index - 1],
                                                                        destination):
                     continue
                 if source_index + 1 <= n - 1 and not self.graph.edge_exists(destination, particle_current_solution[
-                    source_index + 1]):
+                        source_index + 1]):
                     continue
                 if destination_index - 1 > 0 and not self.graph.edge_exists(
                         particle_current_solution[destination_index - 1], source):
                     continue
                 if destination_index + 1 <= n - 1 and not self.graph.edge_exists(source, particle_current_solution[
-                    destination_index + 1]):
+                        destination_index + 1]):
                     continue
 
                 if source_index == n - 1 and not self.graph.edge_exists(particle_current_solution[destination_index],
@@ -83,7 +84,8 @@ class ParticlesSwarm(Algorithm):
                 particle_current_solution[destination_index] = source
 
         particle.update_current_solution(particle_current_solution)
-        particle.update_current_score(self.graph.get_path_score(particle_current_solution))
+        particle.update_current_score(
+            self.graph.get_path_score(particle_current_solution))
         particle.solutions.append(particle_current_solution)
 
     def execute(self):
@@ -93,9 +95,11 @@ class ParticlesSwarm(Algorithm):
                 if self.percent_global_scope < 1:
                     close_particles = sorted(self.particles, key=lambda particle: np.linalg.norm(
                         current_particle.best_solution - particle.best_solution))
-                    best_particle = min(close_particles[:self.sigma], key=lambda particle: particle.best_score)
+                    best_particle = min(
+                        close_particles[:self.sigma], key=lambda particle: particle.best_score)
                 else:
-                    best_particle = min(self.particles, key=lambda particle: particle.best_score)
+                    best_particle = min(
+                        self.particles, key=lambda particle: particle.best_score)
                 self.update_best_solution(best_particle)
                 best_particle = self.get_best_solution()
                 best_solution = best_particle.best_solution
@@ -104,10 +108,13 @@ class ParticlesSwarm(Algorithm):
                 self._update_particle(current_particle, best_solution)
 
                 if current_particle.current_score < current_particle.best_score:
-                    current_particle.update_best_solution(current_particle.current_solution)
-                    current_particle.update_best_score(current_particle.current_score)
+                    current_particle.update_best_solution(
+                        current_particle.current_solution)
+                    current_particle.update_best_score(
+                        current_particle.current_score)
 
-        self.update_best_solution(min(self.particles, key=lambda particle: particle.best_score))
+        self.update_best_solution(
+            min(self.particles, key=lambda particle: particle.best_score))
 
     def update_best_solution(self, particle):
         self.best_particle = particle

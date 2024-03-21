@@ -1,4 +1,4 @@
-from src.optimization.graph.graph import Graph
+from graph.graph import Graph
 import numpy as np
 
 

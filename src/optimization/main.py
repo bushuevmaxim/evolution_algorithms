@@ -1,11 +1,11 @@
 import numpy as np
 
-from src.optimization.algorithms.pso.pso import ParticlesSwarm
-from src.optimization.graph.matrix_graph import MatrixGraph
+from algorithms.pso.pso import ParticlesSwarm
+from graph.matrix_graph import MatrixGraph
 
 if __name__ == "__main__":
     matrix_new = []
-    with open('matrix.txt') as f:
+    with open('src/optimization/matrix.txt') as f:
         lines = f.readlines()
         for line in lines:
             matrix_new.append(list(map(int, line.split(' '))))
@@ -16,6 +16,4 @@ if __name__ == "__main__":
     best_particle = particlesSwarm.get_best_solution()
     print(best_particle.best_solution)
     print(best_particle.best_score)
-
-
-
+4
