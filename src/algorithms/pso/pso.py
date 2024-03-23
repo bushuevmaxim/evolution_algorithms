@@ -17,10 +17,12 @@ class ParticlesSwarm(Algorithm):
 
         self.sigma = int(percent_global_scope * n_particles)
         self.percent_global_scope = percent_global_scope
+        self.best_solutions = []
+        self.best_scores = []
         self.initialize()
 
     def initialize(self):
-        for i in range(self.n_particles):
+        for _ in range(self.n_particles):
             random_path = self.graph.get_random_path()
             score = self.graph.get_path_score(random_path)
             particle = Particle(random_path, score)
@@ -49,9 +51,10 @@ class ParticlesSwarm(Algorithm):
                     velocity[i] = 0
         particle.update_velocity(particle.velocity + velocity)
 
-    def _update_particle(self, particle: Particle, best_solution: np.ndarray):
+    def _update_particle(self, particle: Particle, best_solution: np.ndarray, epoch):
         velocity = particle.velocity
         n = len(velocity)
+
         particle_current_solution = np.copy(particle.current_solution)
         for source_index in range(n):
             if velocity[source_index] == 1:
@@ -82,16 +85,26 @@ class ParticlesSwarm(Algorithm):
                     continue
                 particle_current_solution[source_index] = particle_current_solution[destination_index]
                 particle_current_solution[destination_index] = source
-
         particle.update_current_solution(particle_current_solution)
-        particle.update_current_score(
-            self.graph.get_path_score(particle_current_solution))
-        particle.solutions.append(particle_current_solution)
+        score = self.graph.get_path_score(particle_current_solution)
+        particle.update_current_score(score)
+
+        if list(particle_current_solution) not in particle.solutions:
+            particle.solutions.append((epoch, list(
+                particle_current_solution), score))
 
     def execute(self):
-        for epoch in range(self.n_iterations):
-            for current_particle in self.particles:
+        global_best_particle = min(
+            self.particles, key=lambda particle: particle.best_score)
+        self.update_best_solution(global_best_particle
+                                  )
+        self.best_solutions.append((0,
 
+                                    global_best_particle.best_solution, global_best_particle.best_score))
+        for epoch in range(self.n_iterations):
+
+            for current_particle in self.particles:
+                current_particle.clear_velocity()
                 if self.percent_global_scope < 1:
                     close_particles = sorted(self.particles, key=lambda particle: np.linalg.norm(
                         current_particle.best_solution - particle.best_solution))
@@ -100,12 +113,11 @@ class ParticlesSwarm(Algorithm):
                 else:
                     best_particle = min(
                         self.particles, key=lambda particle: particle.best_score)
-                self.update_best_solution(best_particle)
-                best_particle = self.get_best_solution()
+
                 best_solution = best_particle.best_solution
                 self._update_velocity(current_particle, best_particle)
 
-                self._update_particle(current_particle, best_solution)
+                self._update_particle(current_particle, best_solution, epoch)
 
                 if current_particle.current_score < current_particle.best_score:
                     current_particle.update_best_solution(
@@ -113,8 +125,21 @@ class ParticlesSwarm(Algorithm):
                     current_particle.update_best_score(
                         current_particle.current_score)
 
-        self.update_best_solution(
-            min(self.particles, key=lambda particle: particle.best_score))
+                if current_particle.best_score < global_best_particle.best_score:
+                    print(f'update{current_particle.best_score}')
+                    self.update_best_solution(current_particle)
+                    global_best_particle = current_particle
+                    self.best_solutions.append((epoch,
+
+                                                global_best_particle.best_solution, global_best_particle.best_score))
+                if best_particle.best_score < global_best_particle.best_score:
+                    print(f'update{best_particle.best_score}')
+                    self.update_best_solution(best_particle)
+                    global_best_particle = best_particle
+                    self.best_solutions.append(
+                        (epoch, global_best_particle.best_solution, global_best_particle.best_score))
+
+        return self.get_best_solution(), self.best_solutions
 
     def update_best_solution(self, particle):
         self.best_particle = particle

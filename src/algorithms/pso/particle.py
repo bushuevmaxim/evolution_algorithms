@@ -19,6 +19,9 @@ class Particle:
     def update_velocity(self, velocity):
         self.velocity = velocity
 
+    def clear_velocity(self):
+        self.velocity = Velocity(np.zeros(self.current_solution.shape))
+
     def update_current_solution(self, solution):
         self.current_solution = solution
 
