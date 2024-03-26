@@ -126,14 +126,12 @@ class ParticlesSwarm(Algorithm):
                         current_particle.current_score)
 
                 if current_particle.best_score < global_best_particle.best_score:
-                    print(f'update{current_particle.best_score}')
                     self.update_best_solution(current_particle)
                     global_best_particle = current_particle
                     self.best_solutions.append((epoch,
 
                                                 global_best_particle.best_solution, global_best_particle.best_score))
                 if best_particle.best_score < global_best_particle.best_score:
-                    print(f'update{best_particle.best_score}')
                     self.update_best_solution(best_particle)
                     global_best_particle = best_particle
                     self.best_solutions.append(

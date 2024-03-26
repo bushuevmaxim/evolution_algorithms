@@ -9,7 +9,6 @@ class MatrixGraph(Graph):
         self.n = matrix_adjacency.shape[0]
 
     def get_view_graph(self):
-        print('Матрица смежности')
         return self.matrix_adjacency
 
     def get_random_path(self):
