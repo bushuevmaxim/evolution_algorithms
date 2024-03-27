@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from time import time
 
 from utils.graph import show_solutions
-from utils.read_graph import get_matrix_from_file
+from utils.read_graph import get_matrix_from_file, matrix_from_edges, read_edges
 
 
 st.set_page_config(layout="centered")
@@ -37,8 +37,10 @@ if uploaded_file and solve_button:
     st.session_state.solution_find = False
     stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
     lines = stringio.read()
-
-    matrix = get_matrix_from_file(lines.split('\n'))
+    print()
+    matrix = get_matrix_from_file(lines.split(
+        '\n')) if len(lines.split('\n')[1]) > 3 else matrix_from_edges(*read_edges(lines.split(
+            '\n')))
     graph = MatrixGraph(np.array(matrix))
     pso = ParticlesSwarm(
         graph, n_iter, n_particles, threshold, neighborhood_size)
@@ -60,5 +62,4 @@ if show_solution_best_particle:
     show_solutions(st.session_state.solution[0].solutions)
 
 if show_best_solutions:
-
     show_solutions(st.session_state.solution[1])
