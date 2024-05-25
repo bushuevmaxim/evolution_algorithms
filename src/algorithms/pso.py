@@ -1,9 +1,9 @@
 import numpy as np
-
 from algorithms.algorithm import Algorithm
-from algorithms.pso.particle import Particle
-from algorithms.pso.velocity import Velocity
 from graph.graph import Graph
+
+from .particle import Particle
+from .velocity import Velocity
 
 
 class ParticlesSwarm(Algorithm):

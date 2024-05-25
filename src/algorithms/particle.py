@@ -1,6 +1,6 @@
 import numpy as np
 
-from algorithms.pso.velocity import Velocity
+from .velocity import Velocity
 
 
 class Particle:
