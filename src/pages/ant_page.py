@@ -21,6 +21,8 @@ mutation_probability = st.slider(
     'Вероятность мутации', 0.0, 1.0, 0.72, 0.01)
 cross_probability = st.slider(
     'Вероятность скрещивания', 0.0, 1.0, 0.6, 0.01)
+forward_probability  = st.slider(
+    'Вероятность сделать шаг вперед, если чувствует пищу', 0.0, 1.0, 0.9, 0.01)
 uploaded_file = st.file_uploader("Upload a text file", type=["txt", "png"])
 solve_button = st.button('Найти решение')
  
@@ -43,7 +45,9 @@ if uploaded_file:
     indexes = np.where(field == 1)
 
     apples = [(i, j) for i, j in  zip(indexes[0], indexes[1])]
-    st.text(f"Количество яблок на поле: {len(apples)}")
+    n_apples =len(apples)
+
+    st.text(f"Количество яблок на поле: {n_apples}")
     rgb_field = get_rgb_field(len(field), apples)
     fig =  show_field_rgb(rgb_field)
     st.pyplot(fig)
@@ -51,8 +55,9 @@ if uploaded_file and solve_button:
     st.session_state.solution_find = False
     
     algorithm = MachineEvolution(
-        n_states, n_cross, n_population, mutation_probability, cross_probability)
-    algorithm.set_map(field)
+        field,
+        n_apples,
+        n_states, n_cross, n_population, mutation_probability, cross_probability, forward_probability)
     
     start = time()
     algorithm.run(n_epochs)
